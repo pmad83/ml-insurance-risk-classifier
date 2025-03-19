@@ -28,14 +28,6 @@ public class RiskClassifier {
     private static final Logger logger = LoggerFactory.getLogger(RiskClassifier.class);
     private static final String[] FEATURE_NAMES = new String[] {"wiek", "liczba_wypadkow", "wartosc_ubezpieczenia", "historia_szkod"};
     private static final String TRAINING_DATA = "src/main/resources/data/training_data.csv";
-    private static final Map<Integer, String> RISK_LEVEL_MAP = new HashMap<>();
-
-    static {
-        RISK_LEVEL_MAP.put(1, "niskie");
-        RISK_LEVEL_MAP.put(2, "średnie");
-        RISK_LEVEL_MAP.put(3, "wysokie");
-        RISK_LEVEL_MAP.put(4, "bardzo wysokie");
-    }
 
     private Model<Label> model;
     private Trainer<Label> trainer;
@@ -53,19 +45,21 @@ public class RiskClassifier {
         }
     }
 
-    public String classify(Klient klient) {
+    public Integer classify(Klient klient) {
         Label unknownOutput = new LabelFactory().getUnknownOutput();
 
         Example<Label> inputData = new ArrayExample<>(unknownOutput, FEATURE_NAMES, getFeatureValues(klient));
 
         Prediction<Label> prediction = model.predict(inputData);
         Label predictedLabel = prediction.getOutput();
+        String label = predictedLabel.getLabel();
+        logger.info("Wynik klasyfikacji = {}", label);
 
         try {
-            double riskValue = Double.valueOf(predictedLabel.getLabel());
-            return "Ryzyko ubezpieczenia (" + predictedLabel.getLabel() + ") jest " + mapRiskLevel(riskValue);
+            return (int) Double.parseDouble(label);
         } catch (NumberFormatException e) {
-            return "Ryzyko ubezpieczenia (" + predictedLabel.getLabel() + ") nie jest liczbą";
+            logger.error("Niepoprawny format liczby: {}", e.getMessage());
+            return null;
         }
     }
 
@@ -73,11 +67,6 @@ public class RiskClassifier {
         logger.info("klient.getWiek() = {}, klient.getLiczbaWypadkow() = {}, klient.getWartoscUbezpieczenia() = {}, klient.getHistoriaSzkod() = {}",
                 klient.getWiek(), klient.getLiczbaWypadkow(), klient.getWartoscUbezpieczenia(), klient.getHistoriaSzkod());
         return new double[] {klient.getWiek(), klient.getLiczbaWypadkow(), klient.getWartoscUbezpieczenia(), klient.getHistoriaSzkod()};
-    }
-
-    private String mapRiskLevel(double riskValue) {
-        int level = (int) Math.round(riskValue);
-        return RISK_LEVEL_MAP.getOrDefault(level, "nieznane");
     }
 
     private void createTrainer() {
