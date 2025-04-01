@@ -1,4 +1,4 @@
-wiek;liczba_wypadkow;wartosc_ubezpieczenia;historia_szkod;ryzyko
+age;accidents_qty;insurance_sum;claims_history;risk_level
 74;0;12.8;1;1
 44;0;52.7;1;2
 25;0;299.5;0;3

@@ -7,9 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Główna klasa aplikacji Spring Boot.
  */
 @SpringBootApplication
-public class Application {
+public class MLInsuranceRiskClassifierApplication {
     public static void main(String[] args) {
 
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(MLInsuranceRiskClassifierApplication.class, args);
     }
 }

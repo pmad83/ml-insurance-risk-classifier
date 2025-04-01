@@ -1,0 +1,57 @@
+openapi: 3.0.3
+info:
+  title: Customer Risk Classifier API
+  description: API do klasyfikacji ryzyka ubezpieczeniowego klientów
+  version: 1.0.0
+
+paths:
+  /customer/classify:
+    post:
+      summary: Klasyfikacja ryzyka klienta
+      description: Przyjmuje dane klienta i zwraca ocenę ryzyka ubezpieczeniowego
+      operationId: classifyCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        "200":
+          description: Sukces - zwraca poziom ryzyka ubezpieczeniowego
+          content:
+            text/plain:
+              schema:
+                type: string
+        "204":
+          description: Brak możliwości klasyfikacji ryzyka
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        age:
+          type: integer
+          format: int32
+        accidentsQty:
+          type: integer
+          format: int32
+        insuranceSum:
+          type: integer
+          format: int32
+        claimsHistory:
+          type: integer
+          format: int32
+        riskLevel:
+          type: integer
+          format: int32
+          nullable: true

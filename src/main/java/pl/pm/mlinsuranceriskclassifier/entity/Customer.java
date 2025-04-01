@@ -7,18 +7,18 @@ import jakarta.persistence.Id;
 import lombok.Data;
 
 /*
- * Klasa Klient reprezentuje ubezpieczającego, dla którego szacowane jest ryzyko szkodowe.
+ * Klasa Customer reprezentuje ubezpieczającego, dla którego szacowane jest ryzyko szkodowe.
  */
 @Entity
 @Data
-public class Klient {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer wiek;
-    private Integer liczbaWypadkow;
-    private Integer wartoscUbezpieczenia;
-    private Integer historiaSzkod;
-    private Integer ryzyko;
+    private Integer age;
+    private Integer accidentsQty;
+    private Integer insuranceSum;
+    private Integer claimsHistory;
+    private Integer riskLevel;
 }

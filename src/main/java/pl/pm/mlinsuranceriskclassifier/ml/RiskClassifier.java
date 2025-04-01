@@ -2,8 +2,6 @@ package pl.pm.mlinsuranceriskclassifier.ml;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.oracle.labs.mlrg.olcut.provenance.ProvenanceUtil;
 import org.slf4j.Logger;
@@ -19,14 +17,14 @@ import org.tribuo.data.csv.CSVIterator;
 import org.tribuo.data.csv.CSVLoader;
 import org.tribuo.evaluation.TrainTestSplitter;
 import org.tribuo.impl.ArrayExample;
-import pl.pm.mlinsuranceriskclassifier.entity.Klient;
+import pl.pm.mlinsuranceriskclassifier.entity.Customer;
 
 /*
  * Klasa RiskClassifier służy do klasyfikacji ryzyka ubezpieczeniowego.
  */
 public class RiskClassifier {
     private static final Logger logger = LoggerFactory.getLogger(RiskClassifier.class);
-    private static final String[] FEATURE_NAMES = new String[] {"wiek", "liczba_wypadkow", "wartosc_ubezpieczenia", "historia_szkod"};
+    private static final String[] FEATURE_NAMES = new String[] {"age", "accidents_qty", "insurance_sum", "claims_history"};
     private static final String TRAINING_DATA = "src/main/resources/data/training_data.csv";
 
     private Model<Label> model;
@@ -45,10 +43,10 @@ public class RiskClassifier {
         }
     }
 
-    public Integer classify(Klient klient) {
+    public Integer classify(Customer customer) {
         Label unknownOutput = new LabelFactory().getUnknownOutput();
 
-        Example<Label> inputData = new ArrayExample<>(unknownOutput, FEATURE_NAMES, getFeatureValues(klient));
+        Example<Label> inputData = new ArrayExample<>(unknownOutput, FEATURE_NAMES, getFeatureValues(customer));
 
         Prediction<Label> prediction = model.predict(inputData);
         Label predictedLabel = prediction.getOutput();
@@ -63,10 +61,10 @@ public class RiskClassifier {
         }
     }
 
-    private double[] getFeatureValues(Klient klient) {
-        logger.info("klient.getWiek() = {}, klient.getLiczbaWypadkow() = {}, klient.getWartoscUbezpieczenia() = {}, klient.getHistoriaSzkod() = {}",
-                klient.getWiek(), klient.getLiczbaWypadkow(), klient.getWartoscUbezpieczenia(), klient.getHistoriaSzkod());
-        return new double[] {klient.getWiek(), klient.getLiczbaWypadkow(), klient.getWartoscUbezpieczenia(), klient.getHistoriaSzkod()};
+    private double[] getFeatureValues(Customer customer) {
+        logger.info("klient.getAge() = {}, klient.getAccidentsQty() = {}, klient.getInsuranceSum() = {}, klient.getClaimsHistory() = {}",
+                customer.getAge(), customer.getAccidentsQty(), customer.getInsuranceSum(), customer.getClaimsHistory());
+        return new double[] {customer.getAge(), customer.getAccidentsQty(), customer.getInsuranceSum(), customer.getClaimsHistory()};
     }
 
     private void createTrainer() {
@@ -87,7 +85,7 @@ public class RiskClassifier {
 
         LabelFactory labelFactory = new LabelFactory();
         CSVLoader<Label> csvLoader = new CSVLoader<>(';', CSVIterator.QUOTE, labelFactory);
-        DataSource<Label> dataSource = csvLoader.loadDataSource(Paths.get(TRAINING_DATA), "ryzyko");
+        DataSource<Label> dataSource = csvLoader.loadDataSource(Paths.get(TRAINING_DATA), "risk_level");
 
         TrainTestSplitter<Label> dataSplitter = new TrainTestSplitter<>(dataSource,0.7,1L);
 
